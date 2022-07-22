@@ -1,0 +1,73 @@
+﻿
+@page
+@model STW_DevExpress_Demo.Pages.EmployeesModel
+@{
+}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.10.1/polyfill.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/3.8.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+@(Html.DevExtreme().DataGrid()
+    .ID("gridContainer")
+    .Scrolling(scrolling => scrolling.RowRenderingMode(GridRowRenderingMode.Virtual))
+    .Sorting(sorting => sorting.Mode(GridSortingMode.Multiple))
+    .Paging(paging => paging.PageSize(10))
+    .Export(e => e.Enabled(true).AllowExportSelectedData(true))
+    .OnExporting("exporting")
+    .FilterRow(filterRow => filterRow
+        .Visible(true)
+        .ApplyFilter(GridApplyFilterMode.Auto)
+    )
+    .SearchPanel(searchPanel => searchPanel
+        .Visible(true)
+        .Width(240)
+        .Placeholder("Search...")
+    )
+    .HeaderFilter(headerFilter => headerFilter.Visible(true))
+    .Pager(pager =>
+    {
+        pager.Visible(true);
+        pager.DisplayMode(GridPagerDisplayMode.Full);
+        pager.ShowPageSizeSelector(true);
+        pager.AllowedPageSizes(new JS("[10, 20, 'all']"));
+        pager.ShowInfo(true);
+        pager.ShowNavigationButtons(true);
+    })
+    .AllowColumnReordering(true)
+    .AllowColumnResizing(true)
+    .ColumnAutoWidth(true)
+    .ShowBorders(true)
+    .ColumnChooser(c => c.Enabled(true))
+    .ColumnFixing(c => c.Enabled(true))
+    .Columns(columns => {
+        columns.Add().DataField("firstName");
+        columns.Add().DataField("lastName");
+        columns.Add().DataField("email");
+        columns.Add().DataField("contactNumber");
+        columns.Add().DataField("age").Width(100);
+        columns.Add().DataField("dob");
+        columns.Add().DataField("salary");
+        columns.Add().DataField("address");
+
+    })
+    .DataSource(d => d.StaticJson().Url("https://hub.dummyapis.com/employee").Key("id"))
+    .ShowBorders(true)
+)
+<script>
+    function exporting(e) {
+        var workbook = new ExcelJS.Workbook();
+        var worksheet = workbook.addWorksheet('Employees');
+
+        DevExpress.excelExporter.exportDataGrid({
+            component: e.component,
+            worksheet: worksheet,
+            autoFilterEnabled: true
+        }).then(function () {
+            workbook.xlsx.writeBuffer().then(function (buffer) {
+                saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'Employees.xlsx');
+            });
+        });
+        e.cancel = true;
+    }
+</script>

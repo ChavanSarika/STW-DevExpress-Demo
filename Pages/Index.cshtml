@@ -1,0 +1,68 @@
+﻿@page
+@using  STW_DevExpress_Demo.Models;
+
+<h2 class="content-block">Home</h2>
+
+@(Html.DevExtreme().DataGrid<ServiceTypes>()
+        .ElementAttr(new { @class = "dx-card wide-card" })
+        .DataSource(d => d.Mvc().Controller("SparkData").LoadAction("Get").Key("Id"))
+        .ShowBorders(true)
+        .FilterRow(f => f.Visible(true))
+        .FocusedRowEnabled(true)
+        .FocusedRowIndex(0)
+        .AllowColumnResizing(true)
+        .ColumnMinWidth(50)
+        .ColumnAutoWidth(true)
+        .ColumnHidingEnabled(true)
+        .Columns(columns => {
+            columns.AddFor(m => m.Id);
+            columns.AddFor(m => m.Name);
+            columns.AddFor(m => m.Price)
+            .DataType(GridColumnDataType.Number)
+            .Format(Format.Currency);
+
+        })
+        .Paging(p => p.PageSize(10))
+        .Pager(p => p
+            .ShowPageSizeSelector(true)
+            .AllowedPageSizes(new[] { 5, 10, 20 })
+            .ShowInfo(true)
+        )
+    )
+
+@*@(Html.DevExtreme().DataGrid()
+        .ShowBorders(true)
+        .DataSource(d => d.OData()
+            .Url("https://localhost:44388/odata/employee")
+            .Key("Id")
+        )
+        .DataSourceOptions(d => d.Select(new[] {
+                "Id",
+                "Name",
+                "Gender",
+                "City",
+                "DepartmentId"
+            })
+        )
+        .Columns(columns => {
+            columns.Add()
+                .DataField("Id");
+
+            columns.Add()
+                .DataField("Name")
+                .Width(250);
+
+            columns.Add()
+                .Caption("Gender")
+                .DataField("Gender");
+
+            columns.Add()
+                .DataField("City");
+
+            columns.Add()
+                .DataField("DepartmentId")
+                .Caption("Department Id");
+        })
+    )*@
+
+​
